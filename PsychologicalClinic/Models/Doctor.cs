@@ -8,6 +8,7 @@ namespace PsychologicalClinic.Models
         public string Name { get; set; }
         public string Specialization { get; set; }
         public string PhotoUrl { get; set; }
+        public string Email { get; set; }
 
         // Navigation Properties
         public string CharactersId { get; set; }

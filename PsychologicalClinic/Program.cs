@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PsychologicalClinic.Data;
 using PsychologicalClinic.Models;
+using PsychologicalClinic.Repository.Services;
 
 public class Program
 {
@@ -21,6 +23,17 @@ public class Program
         })
            .AddEntityFrameworkStores<ClinicDbContext>()
            .AddDefaultTokenProviders();
+
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = JwtTokenServeses.ValidateToken(builder.Configuration);
+        });
+
 
         app.MapGet("/", () => "Hello World!");
 
