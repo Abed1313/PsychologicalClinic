@@ -47,6 +47,29 @@ namespace PsychologicalClinic.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "doctor",
+                            ConcurrencyStamp = "00000000-0000-0000-0000-000000000000",
+                            Name = "Doctor",
+                            NormalizedName = "DOCTOR"
+                        },
+                        new
+                        {
+                            Id = "patient",
+                            ConcurrencyStamp = "00000000-0000-0000-0000-000000000000",
+                            Name = "Patient",
+                            NormalizedName = "PATIENT"
+                        },
+                        new
+                        {
+                            Id = "secretary",
+                            ConcurrencyStamp = "00000000-0000-0000-0000-000000000000",
+                            Name = "Secretary",
+                            NormalizedName = "SECRETARY"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -72,6 +95,71 @@ namespace PsychologicalClinic.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -2037863638,
+                            ClaimType = "permission",
+                            ClaimValue = "update",
+                            RoleId = "doctor"
+                        },
+                        new
+                        {
+                            Id = 238792368,
+                            ClaimType = "permission",
+                            ClaimValue = "read",
+                            RoleId = "doctor"
+                        },
+                        new
+                        {
+                            Id = 2027697262,
+                            ClaimType = "permission",
+                            ClaimValue = "delete",
+                            RoleId = "doctor"
+                        },
+                        new
+                        {
+                            Id = -582191248,
+                            ClaimType = "permission",
+                            ClaimValue = "create",
+                            RoleId = "doctor"
+                        },
+                        new
+                        {
+                            Id = -1543801673,
+                            ClaimType = "permission",
+                            ClaimValue = "read",
+                            RoleId = "patient"
+                        },
+                        new
+                        {
+                            Id = 502535486,
+                            ClaimType = "permission",
+                            ClaimValue = "update",
+                            RoleId = "secretary"
+                        },
+                        new
+                        {
+                            Id = 994347803,
+                            ClaimType = "permission",
+                            ClaimValue = "read",
+                            RoleId = "secretary"
+                        },
+                        new
+                        {
+                            Id = 322813543,
+                            ClaimType = "permission",
+                            ClaimValue = "delete",
+                            RoleId = "secretary"
+                        },
+                        new
+                        {
+                            Id = -369109956,
+                            ClaimType = "permission",
+                            ClaimValue = "create",
+                            RoleId = "secretary"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -304,16 +392,18 @@ namespace PsychologicalClinic.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhotoUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Specialization")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("DoctorId");
@@ -332,7 +422,7 @@ namespace PsychologicalClinic.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientId"));
 
-                    b.Property<int>("Age")
+                    b.Property<int?>("Age")
                         .HasColumnType("int");
 
                     b.Property<string>("CharactersId")
@@ -343,11 +433,10 @@ namespace PsychologicalClinic.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("FirstVisitDate")
+                    b.Property<DateTime?>("FirstVisitDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Gender")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -355,11 +444,9 @@ namespace PsychologicalClinic.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nationality")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PatientId");
@@ -421,7 +508,6 @@ namespace PsychologicalClinic.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SecretaryId");

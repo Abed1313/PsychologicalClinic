@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace PsychologicalClinic.Migrations
 {
     /// <inheritdoc />
-    public partial class ModelsAndDbContext : Migration
+    public partial class AddModelsAndDbContext : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -177,8 +179,9 @@ namespace PsychologicalClinic.Migrations
                     DoctorId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Specialization = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Specialization = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CharactersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -199,12 +202,12 @@ namespace PsychologicalClinic.Migrations
                     PatientId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Age = table.Column<int>(type: "int", nullable: false),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Nationality = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Age = table.Column<int>(type: "int", nullable: true),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Nationality = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FirstVisitDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FirstVisitDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CharactersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -225,7 +228,7 @@ namespace PsychologicalClinic.Migrations
                     SecretaryId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CharactersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -347,6 +350,32 @@ namespace PsychologicalClinic.Migrations
                         principalTable: "Secretaries",
                         principalColumn: "SecretaryId",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "doctor", "00000000-0000-0000-0000-000000000000", "Doctor", "DOCTOR" },
+                    { "patient", "00000000-0000-0000-0000-000000000000", "Patient", "PATIENT" },
+                    { "secretary", "00000000-0000-0000-0000-000000000000", "Secretary", "SECRETARY" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoleClaims",
+                columns: new[] { "Id", "ClaimType", "ClaimValue", "RoleId" },
+                values: new object[,]
+                {
+                    { -2037863638, "permission", "update", "doctor" },
+                    { -1543801673, "permission", "read", "patient" },
+                    { -582191248, "permission", "create", "doctor" },
+                    { -369109956, "permission", "create", "secretary" },
+                    { 238792368, "permission", "read", "doctor" },
+                    { 322813543, "permission", "delete", "secretary" },
+                    { 502535486, "permission", "update", "secretary" },
+                    { 994347803, "permission", "read", "secretary" },
+                    { 2027697262, "permission", "delete", "doctor" }
                 });
 
             migrationBuilder.CreateIndex(
