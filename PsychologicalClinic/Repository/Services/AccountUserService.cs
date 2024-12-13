@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.DotNet.Scaffolding.Shared;
 using Microsoft.EntityFrameworkCore;
 using PsychologicalClinic.Data;
 using PsychologicalClinic.Models;
@@ -34,13 +35,12 @@ namespace PsychologicalClinic.Repository.Services
             _baseUrl = configuration["BaseUrl"];
         }
 
-
         public async Task<LogDTO> LoginUser(string username, string password)
         {
             var user = await _userManager.FindByNameAsync(username);
             if (user == null || !(await _userManager.CheckPasswordAsync(user, password)))
             {
-                return null; // or return a custom error indicating invalid credentials
+                return null; // Return null or a custom error indicating invalid credentials
             }
 
             return new LogDTO
@@ -48,9 +48,90 @@ namespace PsychologicalClinic.Repository.Services
                 Id = user.Id,
                 UserName = user.UserName,
                 Token = await _jwtTokenServices.GenerateToken(user, TimeSpan.FromDays(14)),
-                Roles = await _userManager.GetRolesAsync(user)
+                Roles = (await _userManager.GetRolesAsync(user)).ToList() // Ensure roles are returned as a list
             };
+        }
 
+        public async Task<LogDTO> Register(RegisterUserDTO registerUserDTO, ModelStateDictionary modelState)
+        {
+            try
+            {
+                if (!registerUserDTO.Roles.Contains("Patient") && !registerUserDTO.Roles.Contains("Secretary") && !registerUserDTO.Roles.Contains("Doctor"))
+                {
+                    throw new ArgumentException("User must have either the 'Patient' or 'Secretary' or 'Doctor' role to register.");
+                }
+
+                var account = new Characters
+                {
+                    UserName = registerUserDTO.UserName,
+                    Email = registerUserDTO.Email,
+                };
+
+                var result = await _userManager.CreateAsync(account, registerUserDTO.Password);
+
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRolesAsync(account, registerUserDTO.Roles);
+
+                    foreach (var role in registerUserDTO.Roles)
+                    {
+                        switch (role)
+                        {
+                            case "Doctor":
+                                var doctorCount = await _context.Doctors.CountAsync();
+                                if (doctorCount >= 3)
+                                {
+                                    throw new InvalidOperationException("Cannot add more than 3 doctors.");
+                                }
+                                var doctor = new Doctor
+                                {
+                                    CharactersId = account.Id,
+                                    Name = account.UserName,
+                                    Email = account.Email
+                                };
+                                _context.Doctors.Add(doctor);
+                                break;
+                            case "Patient":
+                                var patient = new Patient
+                                {
+                                    CharactersId = account.Id,
+                                    Name = account.UserName
+                                };
+                                _context.Patients.Add(patient);
+                                break;
+                            case "Secretary":
+                                var secretary = new Secretary
+                                {
+                                    CharactersId = account.Id,
+                                    Name = account.UserName,
+                                    Email = account.Email
+                                };
+                                _context.Secretaries.Add(secretary);
+                                break;
+                        }
+                    }
+                    await _context.SaveChangesAsync();
+                    return new LogDTO
+                    {
+                        Id = account.Id,
+                        UserName = account.UserName,
+                        Token = await _jwtTokenServices.GenerateToken(account, TimeSpan.FromMinutes(7)),
+                        Roles = await _userManager.GetRolesAsync(account)
+                    };
+                }
+
+                throw new Exception("User creation failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"Error: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                throw new Exception("An error occurred during registration.", ex);
+            }
         }
         // Logout
         public async Task<LogDTO> LogoutUser(string username)
@@ -83,76 +164,6 @@ namespace PsychologicalClinic.Repository.Services
         }
 
         // Register
-        public async Task<LogDTO> Register(RegisterUserDTO registerUserDTO, ModelStateDictionary modelState)
-        {
-            if (!registerUserDTO.Roles.Contains("Patient") && !registerUserDTO.Roles.Contains("Secretary") && !registerUserDTO.Roles.Contains("Doctor"))
-            {
-                throw new ArgumentException("User must have either the 'Patient' or 'Secretary' role to register.");
-            }
-
-            var account = new Characters
-            {
-                UserName = registerUserDTO.UserName,
-                Email = registerUserDTO.Email,
-            };
-
-            var result = await _userManager.CreateAsync(account, registerUserDTO.Password);
-
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRolesAsync(account, registerUserDTO.Roles);
-
-                foreach (var role in registerUserDTO.Roles)
-                {
-                    switch (role)
-                    {
-                        case "Admin":
-                            // Check if there are already 3 admins
-                            var adminCount = await _context.Doctors.CountAsync();
-                            if (adminCount >= 3)
-                            {
-                                throw new InvalidOperationException("Cannot add more than 3 admins.");
-                            }
-
-                            var admin = new Doctor
-                            {
-                                CharactersId = account.Id,
-                                Name = account.UserName,
-                                Email = account.Email
-                            };
-                            _context.Doctors.Add(admin);
-                            break;
-                        case "Guest":
-                            var guest = new Patient
-                            {
-                                CharactersId = account.Id,
-                                Name = account.UserName
-                            };
-                            _context.Patients.Add(guest);
-                            break;
-                        case "Provider":
-                            var provider = new Secretary
-                            {
-                                CharactersId = account.Id,
-                                Name = account.UserName,
-                                Email = account.Email
-                            };
-                            _context.Secretaries.Add(provider);
-                            break;
-                    }
-                }
-                await _context.SaveChangesAsync();
-                return new LogDTO
-                {
-                    Id = account.Id,
-                    UserName = account.UserName,
-                    Token = await _jwtTokenServices.GenerateToken(account, TimeSpan.FromMinutes(7)),
-                    Roles = await _userManager.GetRolesAsync(account)
-                };
-            }
-
-            throw new Exception("User creation failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
-        }
 
         // Delete User
         public async Task<LogDTO> DeleteAccount(string username)
