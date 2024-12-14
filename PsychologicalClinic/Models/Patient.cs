@@ -15,7 +15,6 @@
         public string CharactersId { get; set; }
         public Characters User { get; set; } // Navigation
         public ICollection<Disease> DiseaseHistory { get; set; }
-        public ICollection<Appointment> Appointments { get; set; }
         public ICollection<PatientComment> Comments { get; set; }
     }
 }

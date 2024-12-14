@@ -222,28 +222,6 @@ namespace PsychologicalClinic.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Secretaries",
-                columns: table => new
-                {
-                    SecretaryId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CharactersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Secretaries", x => x.SecretaryId);
-                    table.ForeignKey(
-                        name: "FK_Secretaries_AspNetUsers_CharactersId",
-                        column: x => x.CharactersId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Videos",
                 columns: table => new
                 {
@@ -317,49 +295,13 @@ namespace PsychologicalClinic.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Appointments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DoctorId = table.Column<int>(type: "int", nullable: false),
-                    PatientId = table.Column<int>(type: "int", nullable: false),
-                    SecretaryId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Appointments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Appointments_Doctors_DoctorId",
-                        column: x => x.DoctorId,
-                        principalTable: "Doctors",
-                        principalColumn: "DoctorId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Appointments_Patients_PatientId",
-                        column: x => x.PatientId,
-                        principalTable: "Patients",
-                        principalColumn: "PatientId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Appointments_Secretaries_SecretaryId",
-                        column: x => x.SecretaryId,
-                        principalTable: "Secretaries",
-                        principalColumn: "SecretaryId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
                     { "doctor", "00000000-0000-0000-0000-000000000000", "Doctor", "DOCTOR" },
-                    { "patient", "00000000-0000-0000-0000-000000000000", "Patient", "PATIENT" },
-                    { "secretary", "00000000-0000-0000-0000-000000000000", "Secretary", "SECRETARY" }
+                    { "patient", "00000000-0000-0000-0000-000000000000", "Patient", "PATIENT" }
                 });
 
             migrationBuilder.InsertData(
@@ -367,31 +309,12 @@ namespace PsychologicalClinic.Migrations
                 columns: new[] { "Id", "ClaimType", "ClaimValue", "RoleId" },
                 values: new object[,]
                 {
-                    { -2037863638, "permission", "update", "doctor" },
-                    { -1543801673, "permission", "read", "patient" },
-                    { -582191248, "permission", "create", "doctor" },
-                    { -369109956, "permission", "create", "secretary" },
-                    { 238792368, "permission", "read", "doctor" },
-                    { 322813543, "permission", "delete", "secretary" },
-                    { 502535486, "permission", "update", "secretary" },
-                    { 994347803, "permission", "read", "secretary" },
-                    { 2027697262, "permission", "delete", "doctor" }
+                    { -2104976712, "permission", "read", "doctor" },
+                    { -192956760, "permission", "update", "doctor" },
+                    { -94789032, "permission", "read", "patient" },
+                    { 1221782018, "permission", "delete", "doctor" },
+                    { 1558284246, "permission", "create", "doctor" }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_DoctorId",
-                table: "Appointments",
-                column: "DoctorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_PatientId",
-                table: "Appointments",
-                column: "PatientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_SecretaryId",
-                table: "Appointments",
-                column: "SecretaryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -460,12 +383,6 @@ namespace PsychologicalClinic.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Secretaries_CharactersId",
-                table: "Secretaries",
-                column: "CharactersId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Videos_DoctorId",
                 table: "Videos",
                 column: "DoctorId");
@@ -474,9 +391,6 @@ namespace PsychologicalClinic.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Appointments");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -500,9 +414,6 @@ namespace PsychologicalClinic.Migrations
 
             migrationBuilder.DropTable(
                 name: "Videos");
-
-            migrationBuilder.DropTable(
-                name: "Secretaries");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
