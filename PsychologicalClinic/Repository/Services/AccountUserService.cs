@@ -56,9 +56,9 @@ namespace PsychologicalClinic.Repository.Services
         {
             try
             {
-                if (!registerUserDTO.Roles.Contains("Patient") && !registerUserDTO.Roles.Contains("Secretary") && !registerUserDTO.Roles.Contains("Doctor"))
+                if (!registerUserDTO.Roles.Contains("Patient") && !registerUserDTO.Roles.Contains("Doctor"))
                 {
-                    throw new ArgumentException("User must have either the 'Patient' or 'Secretary' or 'Doctor' role to register.");
+                    throw new ArgumentException("User must have either the 'Patient'  or 'Doctor' role to register.");
                 }
 
                 var account = new Characters
@@ -98,15 +98,6 @@ namespace PsychologicalClinic.Repository.Services
                                     Name = account.UserName
                                 };
                                 _context.Patients.Add(patient);
-                                break;
-                            case "Secretary":
-                                var secretary = new Secretary
-                                {
-                                    CharactersId = account.Id,
-                                    Name = account.UserName,
-                                    Email = account.Email
-                                };
-                                _context.Secretaries.Add(secretary);
                                 break;
                         }
                     }

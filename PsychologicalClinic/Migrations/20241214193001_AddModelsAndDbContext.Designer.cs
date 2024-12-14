@@ -12,7 +12,7 @@ using PsychologicalClinic.Data;
 namespace PsychologicalClinic.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    [Migration("20241212225914_AddModelsAndDbContext")]
+    [Migration("20241214193001_AddModelsAndDbContext")]
     partial class AddModelsAndDbContext
     {
         /// <inheritdoc />
@@ -65,13 +65,6 @@ namespace PsychologicalClinic.Migrations
                             ConcurrencyStamp = "00000000-0000-0000-0000-000000000000",
                             Name = "Patient",
                             NormalizedName = "PATIENT"
-                        },
-                        new
-                        {
-                            Id = "secretary",
-                            ConcurrencyStamp = "00000000-0000-0000-0000-000000000000",
-                            Name = "Secretary",
-                            NormalizedName = "SECRETARY"
                         });
                 });
 
@@ -102,66 +95,38 @@ namespace PsychologicalClinic.Migrations
                     b.HasData(
                         new
                         {
-                            Id = -2037863638,
+                            Id = -192956760,
                             ClaimType = "permission",
                             ClaimValue = "update",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = 238792368,
+                            Id = -2104976712,
                             ClaimType = "permission",
                             ClaimValue = "read",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = 2027697262,
+                            Id = 1221782018,
                             ClaimType = "permission",
                             ClaimValue = "delete",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = -582191248,
+                            Id = 1558284246,
                             ClaimType = "permission",
                             ClaimValue = "create",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = -1543801673,
+                            Id = -94789032,
                             ClaimType = "permission",
                             ClaimValue = "read",
                             RoleId = "patient"
-                        },
-                        new
-                        {
-                            Id = 502535486,
-                            ClaimType = "permission",
-                            ClaimValue = "update",
-                            RoleId = "secretary"
-                        },
-                        new
-                        {
-                            Id = 994347803,
-                            ClaimType = "permission",
-                            ClaimValue = "read",
-                            RoleId = "secretary"
-                        },
-                        new
-                        {
-                            Id = 322813543,
-                            ClaimType = "permission",
-                            ClaimValue = "delete",
-                            RoleId = "secretary"
-                        },
-                        new
-                        {
-                            Id = -369109956,
-                            ClaimType = "permission",
-                            ClaimValue = "create",
-                            RoleId = "secretary"
                         });
                 });
 
@@ -259,42 +224,6 @@ namespace PsychologicalClinic.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("PatientDisease");
-                });
-
-            modelBuilder.Entity("PsychologicalClinic.Models.Appointment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PatientId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SecretaryId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DoctorId");
-
-                    b.HasIndex("PatientId");
-
-                    b.HasIndex("SecretaryId");
-
-                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("PsychologicalClinic.Models.Characters", b =>
@@ -490,37 +419,6 @@ namespace PsychologicalClinic.Migrations
                     b.ToTable("PatientComments");
                 });
 
-            modelBuilder.Entity("PsychologicalClinic.Models.Secretary", b =>
-                {
-                    b.Property<int>("SecretaryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SecretaryId"));
-
-                    b.Property<string>("CharactersId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("SecretaryId");
-
-                    b.HasIndex("CharactersId")
-                        .IsUnique();
-
-                    b.ToTable("Secretaries");
-                });
-
             modelBuilder.Entity("PsychologicalClinic.Models.Video", b =>
                 {
                     b.Property<int>("Id")
@@ -616,33 +514,6 @@ namespace PsychologicalClinic.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PsychologicalClinic.Models.Appointment", b =>
-                {
-                    b.HasOne("PsychologicalClinic.Models.Doctor", "Doctor")
-                        .WithMany("Appointments")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PsychologicalClinic.Models.Patient", "Patient")
-                        .WithMany("Appointments")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PsychologicalClinic.Models.Secretary", "Secretary")
-                        .WithMany("ManagedAppointments")
-                        .HasForeignKey("SecretaryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Doctor");
-
-                    b.Navigation("Patient");
-
-                    b.Navigation("Secretary");
-                });
-
             modelBuilder.Entity("PsychologicalClinic.Models.Doctor", b =>
                 {
                     b.HasOne("PsychologicalClinic.Models.Characters", "User")
@@ -684,17 +555,6 @@ namespace PsychologicalClinic.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("PsychologicalClinic.Models.Secretary", b =>
-                {
-                    b.HasOne("PsychologicalClinic.Models.Characters", "User")
-                        .WithOne("Secretary")
-                        .HasForeignKey("PsychologicalClinic.Models.Secretary", "CharactersId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("PsychologicalClinic.Models.Video", b =>
                 {
                     b.HasOne("PsychologicalClinic.Models.Doctor", "Doctor")
@@ -713,15 +573,10 @@ namespace PsychologicalClinic.Migrations
 
                     b.Navigation("Patient")
                         .IsRequired();
-
-                    b.Navigation("Secretary")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("PsychologicalClinic.Models.Doctor", b =>
                 {
-                    b.Navigation("Appointments");
-
                     b.Navigation("Comments");
 
                     b.Navigation("Videos");
@@ -729,14 +584,7 @@ namespace PsychologicalClinic.Migrations
 
             modelBuilder.Entity("PsychologicalClinic.Models.Patient", b =>
                 {
-                    b.Navigation("Appointments");
-
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("PsychologicalClinic.Models.Secretary", b =>
-                {
-                    b.Navigation("ManagedAppointments");
                 });
 #pragma warning restore 612, 618
         }
