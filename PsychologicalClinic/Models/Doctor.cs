@@ -15,5 +15,6 @@ namespace PsychologicalClinic.Models
         public Characters User { get; set; } // Navigation
         public ICollection<Video> Videos { get; set; }
         public ICollection<PatientComment> Comments { get; set; }
+        public ICollection<Disease> Disease { get; set; }
     }
 }

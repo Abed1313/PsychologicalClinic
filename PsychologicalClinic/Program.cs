@@ -41,6 +41,7 @@ public class Program
         builder.Services.AddScoped<IAcountUser, AccountUserService>();
         builder.Services.AddScoped<JwtTokenServeses>();
         builder.Services.AddScoped<MailjetEmailService>();
+        builder.Services.AddScoped<IDoctor, DoctorService>();
 
         // CORS Policy
         builder.Services.AddCors(options =>

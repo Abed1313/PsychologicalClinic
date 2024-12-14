@@ -42,6 +42,13 @@ namespace PsychologicalClinic.Data
                 .HasForeignKey(v => v.DoctorId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Doctor to Video (One-to-Many)
+            modelBuilder.Entity<Disease>()
+                .HasOne(v => v.Doctor)
+                .WithMany(d => d.Disease)
+                .HasForeignKey(v => v.DoctorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Doctor to PatientComment (One-to-Many)
             modelBuilder.Entity<PatientComment>()
                 .HasOne(pc => pc.Doctor)
