@@ -92,35 +92,35 @@ namespace PsychologicalClinic.Migrations
                     b.HasData(
                         new
                         {
-                            Id = -192956760,
+                            Id = 1201010973,
                             ClaimType = "permission",
                             ClaimValue = "update",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = -2104976712,
+                            Id = 1237470708,
                             ClaimType = "permission",
                             ClaimValue = "read",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = 1221782018,
+                            Id = 1947536692,
                             ClaimType = "permission",
                             ClaimValue = "delete",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = 1558284246,
+                            Id = 503556295,
                             ClaimType = "permission",
                             ClaimValue = "create",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = -94789032,
+                            Id = -979857297,
                             ClaimType = "permission",
                             ClaimValue = "read",
                             RoleId = "patient"
@@ -300,11 +300,16 @@ namespace PsychologicalClinic.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
 
                     b.ToTable("Diseases");
                 });
@@ -511,6 +516,17 @@ namespace PsychologicalClinic.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PsychologicalClinic.Models.Disease", b =>
+                {
+                    b.HasOne("PsychologicalClinic.Models.Doctor", "Doctor")
+                        .WithMany("Disease")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
             modelBuilder.Entity("PsychologicalClinic.Models.Doctor", b =>
                 {
                     b.HasOne("PsychologicalClinic.Models.Characters", "User")
@@ -575,6 +591,8 @@ namespace PsychologicalClinic.Migrations
             modelBuilder.Entity("PsychologicalClinic.Models.Doctor", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Disease");
 
                     b.Navigation("Videos");
                 });

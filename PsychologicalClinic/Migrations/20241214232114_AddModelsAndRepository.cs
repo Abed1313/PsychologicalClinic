@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PsychologicalClinic.Migrations
 {
     /// <inheritdoc />
-    public partial class AddModelsAndDbContext : Migration
+    public partial class AddModelsAndRepository : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -50,20 +50,6 @@ namespace PsychologicalClinic.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Diseases",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Diseases", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,6 +208,27 @@ namespace PsychologicalClinic.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Diseases",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DoctorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Diseases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Diseases_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "DoctorId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Videos",
                 columns: table => new
                 {
@@ -309,11 +316,11 @@ namespace PsychologicalClinic.Migrations
                 columns: new[] { "Id", "ClaimType", "ClaimValue", "RoleId" },
                 values: new object[,]
                 {
-                    { -2104976712, "permission", "read", "doctor" },
-                    { -192956760, "permission", "update", "doctor" },
-                    { -94789032, "permission", "read", "patient" },
-                    { 1221782018, "permission", "delete", "doctor" },
-                    { 1558284246, "permission", "create", "doctor" }
+                    { -979857297, "permission", "read", "patient" },
+                    { 503556295, "permission", "create", "doctor" },
+                    { 1201010973, "permission", "update", "doctor" },
+                    { 1237470708, "permission", "read", "doctor" },
+                    { 1947536692, "permission", "delete", "doctor" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -354,6 +361,11 @@ namespace PsychologicalClinic.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Diseases_DoctorId",
+                table: "Diseases",
+                column: "DoctorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Doctors_CharactersId",
