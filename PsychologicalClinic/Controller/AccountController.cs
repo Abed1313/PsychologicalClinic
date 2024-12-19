@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PsychologicalClinic.Models.DTO;
 using PsychologicalClinic.Models;
@@ -22,6 +20,13 @@ namespace PsychologicalClinic.Controller
             _userManager = userManager;
             _identityUserManager = identityUserManager;
             _emailService = emailService;
+        }
+
+        [HttpGet("GetAllUsers")]
+        public IActionResult GetAllUsers()
+        {
+            var users = _userManager.GetAllUsers();
+            return Ok(users);
         }
 
         [HttpPost("Register")]

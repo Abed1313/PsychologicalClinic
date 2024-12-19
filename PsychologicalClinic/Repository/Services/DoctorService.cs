@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PsychologicalClinic.Data;
 using PsychologicalClinic.Models;
+using PsychologicalClinic.Models.DTO;
 using PsychologicalClinic.Models.DTO.DoctorDTO;
 using PsychologicalClinic.Repository.Interface;
 
@@ -146,7 +148,7 @@ namespace PsychologicalClinic.Repository.Services
             }
         }
 
-        public async Task<Disease> UpdateDiseaseAsync(DiseaseDto diseaseDto , int diseaseId) // Updates disease details
+        public async Task<Disease> UpdateDiseaseAsync(DiseaseDto diseaseDto , int diseaseId)
         {
             var disease = await _context.Diseases.FindAsync(diseaseId);
             if (disease == null)
@@ -160,6 +162,43 @@ namespace PsychologicalClinic.Repository.Services
 
             await _context.SaveChangesAsync();
             return disease;
+        }
+
+        public async Task<Quiz> CreateQuizAsync(QuizCreationDTO quizDto)
+        {
+            // Find the doctor by ID
+            var doctor = await _context.Doctors.FindAsync(quizDto.DoctorId);
+            if (doctor == null)
+                throw new KeyNotFoundException("Doctor not found");
+
+            // Create a new Quiz object
+            var quiz = new Quiz
+            {
+                Title = quizDto.Title,
+                Description = quizDto.Description,
+                DoctorId = doctor.DoctorId
+            };
+
+            // Add and save the quiz
+            _context.Quizze.Add(quiz);
+            await _context.SaveChangesAsync();
+
+            return quiz;
+        }
+
+        public async Task<Quiz> UpdateQuiz(int quizId, QuizCreationDTO quizDto)
+        {
+            // Find the quiz by ID
+            var quiz = await _context.Quizze.FindAsync(quizId);
+            if (quiz == null)
+                throw new KeyNotFoundException("Quiz not found");
+
+            // Update the quiz fields
+            quiz.Title = quizDto.Title;
+            quiz.Description = quizDto.Description;
+            _context.Quizze.Update(quiz);
+            await _context.SaveChangesAsync();
+            return quiz;
         }
     }
 }

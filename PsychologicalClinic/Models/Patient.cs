@@ -10,11 +10,10 @@
         public string? PhoneNumber { get; set; }
         public string Email { get; set; }
         public DateTime? FirstVisitDate { get; set; }
-
-        // Navigation Properties
         public string CharactersId { get; set; }
         public Characters User { get; set; } // Navigation
         public ICollection<Disease> DiseaseHistory { get; set; }
         public ICollection<PatientComment> Comments { get; set; }
+        public ICollection<QuizResult> QuizResults { get; set; } = new HashSet<QuizResult>();
     }
 }

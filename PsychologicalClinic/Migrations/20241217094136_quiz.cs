@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PsychologicalClinic.Migrations
 {
     /// <inheritdoc />
-    public partial class AddModelsAndRepository : Migration
+    public partial class quiz : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -229,6 +229,27 @@ namespace PsychologicalClinic.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Quizze",
+                columns: table => new
+                {
+                    QuizId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    DoctorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Quizze", x => x.QuizId);
+                    table.ForeignKey(
+                        name: "FK_Quizze_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "DoctorId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Videos",
                 columns: table => new
                 {
@@ -302,6 +323,78 @@ namespace PsychologicalClinic.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Question",
+                columns: table => new
+                {
+                    QuestionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuizId = table.Column<int>(type: "int", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Weight = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Question", x => x.QuestionId);
+                    table.ForeignKey(
+                        name: "FK_Question_Quizze_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizze",
+                        principalColumn: "QuizId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "QuizResult",
+                columns: table => new
+                {
+                    QuizResultId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuizId = table.Column<int>(type: "int", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    TotalScore = table.Column<int>(type: "int", nullable: false),
+                    Feedback = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    DateTaken = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuizResult", x => x.QuizResultId);
+                    table.ForeignKey(
+                        name: "FK_QuizResult_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "PatientId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_QuizResult_Quizze_QuizId",
+                        column: x => x.QuizId,
+                        principalTable: "Quizze",
+                        principalColumn: "QuizId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Option",
+                columns: table => new
+                {
+                    OptionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    QuestionId = table.Column<int>(type: "int", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Score = table.Column<int>(type: "int", nullable: false),
+                    IsCorrect = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Option", x => x.OptionId);
+                    table.ForeignKey(
+                        name: "FK_Option_Question_QuestionId",
+                        column: x => x.QuestionId,
+                        principalTable: "Question",
+                        principalColumn: "QuestionId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
@@ -316,11 +409,11 @@ namespace PsychologicalClinic.Migrations
                 columns: new[] { "Id", "ClaimType", "ClaimValue", "RoleId" },
                 values: new object[,]
                 {
-                    { -979857297, "permission", "read", "patient" },
-                    { 503556295, "permission", "create", "doctor" },
-                    { 1201010973, "permission", "update", "doctor" },
-                    { 1237470708, "permission", "read", "doctor" },
-                    { 1947536692, "permission", "delete", "doctor" }
+                    { -967432272, "permission", "read", "doctor" },
+                    { -201460021, "permission", "read", "patient" },
+                    { 200918374, "permission", "delete", "doctor" },
+                    { 281009438, "permission", "update", "doctor" },
+                    { 1688902693, "permission", "create", "doctor" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -374,6 +467,11 @@ namespace PsychologicalClinic.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Option_QuestionId",
+                table: "Option",
+                column: "QuestionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PatientComments_DoctorId",
                 table: "PatientComments",
                 column: "DoctorId");
@@ -393,6 +491,26 @@ namespace PsychologicalClinic.Migrations
                 table: "Patients",
                 column: "CharactersId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Question_QuizId",
+                table: "Question",
+                column: "QuizId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuizResult_PatientId",
+                table: "QuizResult",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_QuizResult_QuizId",
+                table: "QuizResult",
+                column: "QuizId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quizze_DoctorId",
+                table: "Quizze",
+                column: "DoctorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Videos_DoctorId",
@@ -419,10 +537,16 @@ namespace PsychologicalClinic.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Option");
+
+            migrationBuilder.DropTable(
                 name: "PatientComments");
 
             migrationBuilder.DropTable(
                 name: "PatientDisease");
+
+            migrationBuilder.DropTable(
+                name: "QuizResult");
 
             migrationBuilder.DropTable(
                 name: "Videos");
@@ -431,10 +555,16 @@ namespace PsychologicalClinic.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Question");
+
+            migrationBuilder.DropTable(
                 name: "Diseases");
 
             migrationBuilder.DropTable(
                 name: "Patients");
+
+            migrationBuilder.DropTable(
+                name: "Quizze");
 
             migrationBuilder.DropTable(
                 name: "Doctors");

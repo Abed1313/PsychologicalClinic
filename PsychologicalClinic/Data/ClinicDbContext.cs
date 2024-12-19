@@ -7,15 +7,17 @@ namespace PsychologicalClinic.Data
 {
     public class ClinicDbContext : IdentityDbContext<Characters>
     {
-        public ClinicDbContext(DbContextOptions<ClinicDbContext> options) : base(options)
-        {
-        }
+        public ClinicDbContext(DbContextOptions<ClinicDbContext> options) : base(options) { }
 
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Disease> Diseases { get; set; }
         public DbSet<Video> Videos { get; set; }
         public DbSet<PatientComment> PatientComments { get; set; }
+        public DbSet<Quiz> Quizze { get; set; }
+        public DbSet<Question> Question { get; set; }       
+        public DbSet<Option> Option { get; set; }
+        public DbSet<QuizResult> QuizResult { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -72,8 +74,49 @@ namespace PsychologicalClinic.Data
                     j => j.HasOne<Patient>().WithMany().HasForeignKey("PatientId"),
                     j => j.HasOne<Disease>().WithMany().HasForeignKey("DiseaseId"));
 
-            // Configure additional properties if necessary
+            // Doctor ↔ Quiz (One-to-Many)
+            modelBuilder.Entity<Quiz>()
+                .HasOne(q => q.Doctor)
+                .WithMany(d => d.Quizzes)
+                .HasForeignKey(q => q.DoctorId);
 
+            // Patient ↔ QuizResult (One-to-Many)
+            modelBuilder.Entity<QuizResult>()
+                .HasOne(r => r.Patient)
+                .WithMany(p => p.QuizResults)
+                .HasForeignKey(r => r.PatientId);
+
+            // Quiz ↔ QuizResult (One-to-Many)
+            modelBuilder.Entity<QuizResult>()
+                .HasOne(r => r.Quiz)
+                .WithMany(q => q.QuizResults)
+                .HasForeignKey(r => r.QuizId);
+
+            // Quiz ↔ Question (One-to-Many)
+            modelBuilder.Entity<Question>()
+                .HasOne(q => q.Quiz)
+                .WithMany(qz => qz.Questions)
+                .HasForeignKey(q => q.QuizId);
+
+            // Question ↔ Option (One-to-Many)
+            modelBuilder.Entity<Option>()
+                .HasOne(o => o.Question)
+                .WithMany(q => q.Options)
+                .HasForeignKey(o => o.QuestionId);
+
+            // Quiz ↔ QuizResult (One-to-Many)
+            modelBuilder.Entity<QuizResult>()
+                .HasOne(qr => qr.Quiz)
+                .WithMany(q => q.QuizResults)
+                .HasForeignKey(qr => qr.QuizId);
+
+            // Patient ↔ QuizResult (One-to-Many)
+            modelBuilder.Entity<QuizResult>()
+                .HasOne(qr => qr.Patient)
+                .WithMany(p => p.QuizResults)
+                .HasForeignKey(qr => qr.PatientId);
+
+            // Configure additional properties if necessary
             modelBuilder.Entity<Video>()
                 .Property(v => v.Type)
                 .HasConversion<string>();
@@ -104,5 +147,4 @@ namespace PsychologicalClinic.Data
             modelBuilder.Entity<IdentityRoleClaim<string>>().HasData(claims);
         }
     }
-    
 }
