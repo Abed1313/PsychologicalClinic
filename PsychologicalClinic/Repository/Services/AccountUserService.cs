@@ -35,6 +35,12 @@ namespace PsychologicalClinic.Repository.Services
             _baseUrl = configuration["BaseUrl"];
         }
 
+        public async Task<List<Characters>> GetAllUsers()
+        {
+            var users = _userManager.Users.ToList();
+            return users;
+        }
+
         public async Task<LogDTO> LoginUser(string username, string password)
         {
             var user = await _userManager.FindByNameAsync(username);

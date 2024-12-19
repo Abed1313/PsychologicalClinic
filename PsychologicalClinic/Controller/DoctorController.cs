@@ -4,6 +4,9 @@ using PsychologicalClinic.Models.DTO.DoctorDTO;
 using PsychologicalClinic.Models;
 using PsychologicalClinic.Repository.Interface;
 using PsychologicalClinic.Repository.Services;
+using Microsoft.EntityFrameworkCore;
+using PsychologicalClinic.Models.DTO;
+using PsychologicalClinic.Data;
 
 namespace PsychologicalClinic.Controller
 {
@@ -12,10 +15,13 @@ namespace PsychologicalClinic.Controller
     public class DoctorController : ControllerBase
     {
         private readonly IDoctor _doctorService;
+        private readonly ClinicDbContext _context;
 
-        public DoctorController(IDoctor doctorService)
+
+        public DoctorController(IDoctor doctorService, ClinicDbContext context)
         {
             _doctorService = doctorService;
+            _context = context;
         }
 
         // POST: api/doctor/addvideo
@@ -189,6 +195,35 @@ namespace PsychologicalClinic.Controller
             // Implement disease retrieval logic based on diseaseId if needed
             return Ok(); // Placeholder
         }
+
+        [HttpPost("CreateQuiz")]
+        public async Task<IActionResult> CreateQuiz(QuizCreationDTO quizDto)
+        {
+            try
+            {
+                var quiz = await _doctorService.CreateQuizAsync(quizDto);
+
+                return Ok(new
+                {
+                    message = "Quiz created successfully",
+                    QuizId = quiz.QuizId
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPut("UpdateQuiz/{quizId}")]
+        public async Task<IActionResult> UpdateQuiz(int quizId, [FromBody] QuizCreationDTO quizDto)
+        {
+            var updatedQuiz = await _doctorService.UpdateQuiz(quizId, quizDto);
+            return Ok(new { message = "Quiz updated successfully", updatedQuiz });
+        }
     }
 }
-

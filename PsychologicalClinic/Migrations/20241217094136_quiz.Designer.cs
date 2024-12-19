@@ -12,8 +12,8 @@ using PsychologicalClinic.Data;
 namespace PsychologicalClinic.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    [Migration("20241214232114_AddModelsAndRepository")]
-    partial class AddModelsAndRepository
+    [Migration("20241217094136_quiz")]
+    partial class quiz
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,35 +95,35 @@ namespace PsychologicalClinic.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1201010973,
+                            Id = 281009438,
                             ClaimType = "permission",
                             ClaimValue = "update",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = 1237470708,
+                            Id = -967432272,
                             ClaimType = "permission",
                             ClaimValue = "read",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = 1947536692,
+                            Id = 200918374,
                             ClaimType = "permission",
                             ClaimValue = "delete",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = 503556295,
+                            Id = 1688902693,
                             ClaimType = "permission",
                             ClaimValue = "create",
                             RoleId = "doctor"
                         },
                         new
                         {
-                            Id = -979857297,
+                            Id = -201460021,
                             ClaimType = "permission",
                             ClaimValue = "read",
                             RoleId = "patient"
@@ -351,6 +351,35 @@ namespace PsychologicalClinic.Migrations
                     b.ToTable("Doctors");
                 });
 
+            modelBuilder.Entity("PsychologicalClinic.Models.Option", b =>
+                {
+                    b.Property<int>("OptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OptionId"));
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("OptionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("Option");
+                });
+
             modelBuilder.Entity("PsychologicalClinic.Models.Patient", b =>
                 {
                     b.Property<int>("PatientId")
@@ -422,6 +451,93 @@ namespace PsychologicalClinic.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("PatientComments");
+                });
+
+            modelBuilder.Entity("PsychologicalClinic.Models.Question", b =>
+                {
+                    b.Property<int>("QuestionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuestionId"));
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("Weight")
+                        .HasColumnType("int");
+
+                    b.HasKey("QuestionId");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("Question");
+                });
+
+            modelBuilder.Entity("PsychologicalClinic.Models.Quiz", b =>
+                {
+                    b.Property<int>("QuizId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuizId"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("QuizId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("Quizze");
+                });
+
+            modelBuilder.Entity("PsychologicalClinic.Models.QuizResult", b =>
+                {
+                    b.Property<int>("QuizResultId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuizResultId"));
+
+                    b.Property<DateTime>("DateTaken")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Feedback")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalScore")
+                        .HasColumnType("int");
+
+                    b.HasKey("QuizResultId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("QuizResult");
                 });
 
             modelBuilder.Entity("PsychologicalClinic.Models.Video", b =>
@@ -541,6 +657,17 @@ namespace PsychologicalClinic.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("PsychologicalClinic.Models.Option", b =>
+                {
+                    b.HasOne("PsychologicalClinic.Models.Question", "Question")
+                        .WithMany("Options")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("PsychologicalClinic.Models.Patient", b =>
                 {
                     b.HasOne("PsychologicalClinic.Models.Characters", "User")
@@ -571,6 +698,47 @@ namespace PsychologicalClinic.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("PsychologicalClinic.Models.Question", b =>
+                {
+                    b.HasOne("PsychologicalClinic.Models.Quiz", "Quiz")
+                        .WithMany("Questions")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+                });
+
+            modelBuilder.Entity("PsychologicalClinic.Models.Quiz", b =>
+                {
+                    b.HasOne("PsychologicalClinic.Models.Doctor", "Doctor")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
+            modelBuilder.Entity("PsychologicalClinic.Models.QuizResult", b =>
+                {
+                    b.HasOne("PsychologicalClinic.Models.Patient", "Patient")
+                        .WithMany("QuizResults")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PsychologicalClinic.Models.Quiz", "Quiz")
+                        .WithMany("QuizResults")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("Quiz");
+                });
+
             modelBuilder.Entity("PsychologicalClinic.Models.Video", b =>
                 {
                     b.HasOne("PsychologicalClinic.Models.Doctor", "Doctor")
@@ -597,12 +765,28 @@ namespace PsychologicalClinic.Migrations
 
                     b.Navigation("Disease");
 
+                    b.Navigation("Quizzes");
+
                     b.Navigation("Videos");
                 });
 
             modelBuilder.Entity("PsychologicalClinic.Models.Patient", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("QuizResults");
+                });
+
+            modelBuilder.Entity("PsychologicalClinic.Models.Question", b =>
+                {
+                    b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("PsychologicalClinic.Models.Quiz", b =>
+                {
+                    b.Navigation("Questions");
+
+                    b.Navigation("QuizResults");
                 });
 #pragma warning restore 612, 618
         }

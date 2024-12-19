@@ -16,5 +16,6 @@ namespace PsychologicalClinic.Models
         public ICollection<Video> Videos { get; set; }
         public ICollection<PatientComment> Comments { get; set; }
         public ICollection<Disease> Disease { get; set; }
+        public ICollection<Quiz> Quizzes { get; set; } = new HashSet<Quiz>();
     }
 }

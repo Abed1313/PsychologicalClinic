@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using PsychologicalClinic.Models;
 using PsychologicalClinic.Models.DTO;
 using System.Security.Claims;
 
@@ -7,6 +8,7 @@ namespace PsychologicalClinic.Repository.Interface
 {
     public interface IAcountUser
     {
+        Task<List<Characters>> GetAllUsers();
         // Add register
         Task<LogDTO> Register(RegisterUserDTO registerUserDTO, ModelStateDictionary modelState);
 
